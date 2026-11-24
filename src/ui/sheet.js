@@ -42,6 +42,6 @@ export function openSheet({ title, subtitle, content, onClose }) {
   document.body.appendChild(back);
   open = { back, onKey, onClose };
   const first = sheet.querySelector("input, select, textarea");
-  if (first && window.matchMedia("(min-width: 640px)").matches) first.focus();
+  if (first && window.matchMedia?.("(min-width: 640px)").matches) first.focus();
   return closeSheet;
 }
