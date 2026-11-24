@@ -3,7 +3,7 @@ import { h } from "../ui/dom.js";
 import { lineChart } from "../ui/charts.js";
 import { setState } from "../lib/store.js";
 import { today, toISO, fromISO, MONTHS_SHORT } from "../lib/dates.js";
-import { byCategory } from "../lib/selectors.js";
+import { byCategory, goalOf } from "../lib/selectors.js";
 import { weeklySeries, goalRate, startWeek } from "../lib/stats.js";
 import { formatKg } from "../lib/summary.js";
 import { categoryCard, hbars } from "./stats-cards.js";
@@ -59,10 +59,10 @@ export function renderStats(root, state) {
     return { category: c, series, entries: byCategory(state.entries, c.id).filter((en) => en.day >= from && en.day <= toISO(now)), from };
   });
   const rates = withData
-    .filter((d) => Number(d.category.weekly_goal) > 0)
+    .filter((d) => goalOf(d.category) > 0)
     .map((d) => ({
       category: d.category,
-      rate: goalRate(d.series, Number(d.category.weekly_goal), startWeek(d.category, byCategory(state.entries, d.category.id))),
+      rate: goalRate(d.series, goalOf(d.category), startWeek(d.category, byCategory(state.entries, d.category.id))),
     }));
   const from = withData[0]?.from ?? toISO(now);
 

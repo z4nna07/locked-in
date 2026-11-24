@@ -45,3 +45,35 @@
 .setup-actions { display: flex; flex-direction: column; gap: 10px; position: sticky; bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
 .setup-first .setup-actions { bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
 @media (min-width: 960px) { .setup-actions { bottom: 20px; } }
+
+/* Elenco categorie (riga apribile + interruttore) */
+.cat-row {
+  display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px;
+  padding: 8px 12px 8px 8px; border-radius: 20px; background: var(--surface); border: 1px solid var(--line);
+  transition: opacity 0.2s;
+}
+.cat-row.off { opacity: 0.55; }
+.cat-open { display: grid; grid-template-columns: 42px 1fr 18px; align-items: center; gap: 12px; text-align: left; min-width: 0; padding: 4px; }
+.cat-open .ic { width: 42px; height: 42px; border-radius: 14px; display: grid; place-items: center; background: var(--violet-soft); color: var(--violet); }
+.cat-open .txt { display: flex; flex-direction: column; min-width: 0; }
+.cat-open .t { font-size: 15.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cat-open .s { font-size: 12.5px; color: var(--muted); }
+.cat-open svg.chev { width: 16px; height: 16px; color: var(--dim); }
+
+/* Editor: icone e frequenza */
+.icon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: 6px; }
+.icon-choice {
+  height: 44px; border-radius: 14px; display: grid; place-items: center;
+  background: var(--surface); border: 1px solid var(--line); color: var(--muted);
+}
+.icon-choice[aria-pressed="true"] { background: var(--violet-soft); border-color: var(--violet); color: var(--violet); }
+.freq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.freq {
+  display: flex; flex-direction: column; gap: 3px; text-align: left; padding: 12px; border-radius: 16px;
+  background: var(--surface); border: 1px solid var(--line);
+}
+.freq .t { font-size: 14.5px; font-weight: 500; }
+.freq .s { font-size: 12px; color: var(--muted); line-height: 1.3; }
+.freq[aria-pressed="true"] { border-color: var(--violet); background: var(--violet-soft); }
+.freq-details:empty { display: none; }
+.cat-goal { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 13.5px; color: var(--muted); flex-wrap: wrap; }

@@ -1,6 +1,6 @@
 // Letture derivate dallo stato: registrazioni per categoria, giorno e settimana.
 import { toISO, weekDays, fromISO } from "./dates.js";
-import { dayLevel, weekValue, streak } from "./goals.js";
+import { dayLevel, weekValue, streak, goalFor, streakUnit } from "./goals.js";
 
 export function byCategory(entries, categoryId) {
   return entries.filter((en) => en.category_id === categoryId);
@@ -30,6 +30,16 @@ export function weekProgress(category, entries, refDay) {
   return weekValue(category.kind, inWeek, category.options);
 }
 
+/** Obiettivo settimanale effettivo (per le abitudini quotidiane: i giorni previsti). */
+export function goalOf(category) {
+  return goalFor(category.kind, category.weekly_goal, category.options);
+}
+
+/** Streak con la sua unita': { value, unit: "giorni" | "settimane" }. */
 export function categoryStreak(category, entries, todayDate) {
-  return streak(category.kind, Number(category.weekly_goal), byCategory(entries, category.id), todayDate, category.options);
+  return streak(category.kind, goalOf(category), byCategory(entries, category.id), todayDate, category.options);
+}
+
+export function streakLabel(category, n) {
+  return streakUnit(category.kind, category.options) === "giorni" ? `${n} gg` : `${n} sett.`;
 }

@@ -58,3 +58,21 @@
 .soon h2 { margin: 0; font-size: 22px; font-weight: 500; }
 .soon p { margin: 0; color: var(--muted); max-width: 52ch; }
 .tag { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--neon); border: 1px solid var(--neon-soft); padding: 4px 10px; border-radius: 99px; }
+
+/* Abitudini: contatore "N volte al giorno" e giorni di riposo */
+.counter { display: flex; align-items: center; gap: 6px; }
+.counter button {
+  width: 34px; height: 34px; border-radius: 12px; display: grid; place-items: center;
+  background: var(--surface); border: 1px solid var(--line); color: var(--muted);
+}
+.counter button.plus-one { background: var(--violet); border-color: var(--violet); color: #fff; }
+.counter button[disabled] { opacity: 0.35; }
+.counter button svg.i { width: 16px; height: 16px; stroke-width: 2.2; }
+.counter .num { min-width: 34px; text-align: center; font-weight: 600; font-size: 14px; }
+.counter .num.full { color: var(--neon); }
+.row.rest { opacity: 0.6; }
+.big-counter { display: grid; grid-template-columns: 64px 1fr 64px; align-items: center; gap: 12px; }
+.big-counter .btn { min-height: 64px; padding: 0; }
+.big-counter .big { text-align: center; }
+.big-counter .big.full { color: var(--neon); }
+.dots i.rest, .legend i.rest { background: transparent; box-shadow: inset 0 0 0 1px var(--dot-off); }

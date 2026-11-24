@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { weekValue, dayLevel, streak, goalUnit } from "./goals.js";
+import { weekValue, dayLevel, streak, goalUnit, goalFor, streakUnit } from "./goals.js";
 import { fromISO } from "./dates.js";
 
 const e = (day, amount = 1) => ({ day, amount });
@@ -69,6 +69,23 @@ describe("streak", () => {
     const list = [e("2026-11-17", 300), e("2026-11-18", 300)];
     expect(streak("study", 10, list, today)).toBe(1);
     expect(streak("study", 11, list, today)).toBe(0);
+  });
+});
+
+describe("abitudini personalizzate", () => {
+  const teeth = { schedule: { mode: "perDay", perDay: 2 } };
+  it("valore, obiettivo, unita' e streak in giorni", () => {
+    expect(weekValue("check", [e("2026-11-23", 2), e("2026-11-24", 1)], teeth)).toBe(1);
+    expect(goalFor("check", 3, teeth)).toBe(7);
+    expect(goalUnit("check", teeth)).toBe("giorni");
+    expect(streakUnit("check", teeth)).toBe("giorni");
+    expect(streak("check", 0, [e("2026-11-23", 2), e("2026-11-24", 2)], fromISO("2026-11-25"), teeth)).toBe(2);
+  });
+  it("le settimanali restano come prima", () => {
+    const weekly = { schedule: { mode: "weekly" } };
+    expect(goalFor("check", 3, weekly)).toBe(3);
+    expect(streakUnit("check", weekly)).toBe("settimane");
+    expect(goalUnit("check", {})).toBe("volte");
   });
 });
 

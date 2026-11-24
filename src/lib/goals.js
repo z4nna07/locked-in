@@ -1,6 +1,7 @@
 // Calcolo di obiettivi settimanali, livelli dei pallini e streak a settimane.
 import { toISO, fromISO, startOfWeek, addDays } from "./dates.js";
 import { sleepLevel } from "./sleep.js";
+import { scheduleOf, isDayBased, weeklyTarget, habitWeekValue, habitLevel, dayStreak } from "./habits.js";
 
 /** Come si misura l'obiettivo settimanale di ogni tipo di categoria. */
 const METRIC = {
@@ -22,7 +23,19 @@ const targetHours = (opts) => Number(opts?.target_hours) || DEFAULT_SLEEP_HOURS;
 
 export function goalUnit(kind, opts = {}) {
   if (kind === "sleep") return `notti da ${String(targetHours(opts)).replace(".", ",")} h`;
+  if (kind === "check" && isDayBased(scheduleOf(opts))) return "giorni";
   return UNIT[METRIC[kind] ?? "days"];
+}
+
+/** Obiettivo della settimana: per le abitudini quotidiane deriva dai giorni previsti. */
+export function goalFor(kind, weeklyGoal, opts = {}) {
+  if (kind === "check") return weeklyTarget(scheduleOf(opts), weeklyGoal);
+  return Number(weeklyGoal) || 0;
+}
+
+/** Unita' della streak: giorni per le abitudini quotidiane, settimane per il resto. */
+export function streakUnit(kind, opts = {}) {
+  return kind === "check" && isDayBased(scheduleOf(opts)) ? "giorni" : "settimane";
 }
 
 function lastScorePerDay(entries) {
@@ -47,6 +60,7 @@ export function weekValue(kind, entries, opts = {}) {
   if (metric === "cleanDays") {
     return [...lastScorePerDay(entries).values()].filter((s) => s >= CLEAN_SCORE).length;
   }
+  if (kind === "check") return habitWeekValue(scheduleOf(opts), entries);
   return new Set(entries.map((en) => en.day)).size;
 }
 
@@ -61,6 +75,7 @@ export function dayLevel(kind, entriesOfDay, opts = {}) {
     const score = entriesOfDay[entriesOfDay.length - 1].amount;
     return Math.max(1, Math.min(3, Number(score)));
   }
+  if (kind === "check") return habitLevel(scheduleOf(opts), entriesOfDay);
   return 3;
 }
 
@@ -75,10 +90,12 @@ function groupByWeek(entries) {
 }
 
 /**
- * Settimane consecutive con obiettivo raggiunto.
- * La settimana in corso conta solo se gia' raggiunta; se non lo e' ancora non interrompe la serie.
+ * Streak. Abitudini quotidiane: giorni consecutivi (vedi habits.js).
+ * Tutto il resto: settimane consecutive con obiettivo raggiunto; la settimana in corso
+ * conta solo se gia' raggiunta e, se non lo e' ancora, non interrompe la serie.
  */
 export function streak(kind, goal, entries, today, opts = {}) {
+  if (kind === "check" && isDayBased(scheduleOf(opts))) return dayStreak(scheduleOf(opts), entries, toISO(today));
   if (!goal || goal <= 0) return 0;
   const weeks = groupByWeek(entries);
   const met = (monday) => weekValue(kind, weeks.get(toISO(monday)) ?? [], opts) >= goal;

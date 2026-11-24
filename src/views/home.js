@@ -4,7 +4,7 @@ import { icon } from "../ui/icons.js";
 import { setState } from "../lib/store.js";
 import { toISO, fromISO, addDays, today, WEEKDAYS, WEEKDAYS_SHORT, formatLongDate } from "../lib/dates.js";
 import { dayLevel } from "../lib/goals.js";
-import { indexByDay, categoryStreak } from "../lib/selectors.js";
+import { indexByDay, categoryStreak, goalOf, streakLabel } from "../lib/selectors.js";
 import { iconFor } from "../lib/kinds.js";
 import { dayCard, weekCard } from "./home-cards.js";
 import { yearGrid } from "./year-grid.js";
@@ -54,15 +54,16 @@ function streakChips(categories, entries) {
   const now = today();
   return h(
     "div",
-    { class: "streaks", "aria-label": "Streak in settimane" },
-    categories.filter((c) => Number(c.weekly_goal) > 0).map((c) => {
+    { class: "streaks", "aria-label": "Streak" },
+    categories.filter((c) => goalOf(c) > 0).map((c) => {
       const n = categoryStreak(c, entries, now);
+      const label = streakLabel(c, n);
       return h(
         "span",
-        { class: "chip", title: `${n} settimane di fila` },
+        { class: "chip", title: `Streak: ${label} di fila` },
         icon(iconFor(c)),
         c.name,
-        h("span", { class: `flame${n ? "" : " off"}` }, icon("flame", ""), String(n)),
+        h("span", { class: `flame${n ? "" : " off"}` }, icon("flame", ""), label),
       );
     }),
   );

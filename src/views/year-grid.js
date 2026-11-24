@@ -3,6 +3,7 @@ import { h } from "../ui/dom.js";
 import { toISO, addDays, daysInYear, today, MONTHS_LABEL } from "../lib/dates.js";
 import { dayLevel } from "../lib/goals.js";
 import { indexByDay } from "../lib/selectors.js";
+import { scheduleOf, isScheduled, isoDowOf } from "../lib/habits.js";
 
 const LEGEND = {
   food: [["l3", "Pulito"], ["l2", "Così così"], ["l1", "Schifezze"]],
@@ -11,7 +12,17 @@ const LEGEND = {
 };
 
 const NOUN = { food: "giorni puliti", gym: "allenamenti", sleep: "notti a obiettivo" };
-const countsAsDone = (kind, level) => ((kind === "food" || kind === "sleep") ? level === 3 : level > 0);
+const PER_DAY_LEGEND = [["l3", "Completato"], ["l2", "A metà"], ["rest", "Riposo"]];
+const DAYS_LEGEND = [["l3", "Fatto"], ["", "Saltato"], ["rest", "Riposo"]];
+
+function legendFor(category) {
+  if (category.kind === "check") {
+    const s = scheduleOf(category.options);
+    if (s.mode === "perDay") return PER_DAY_LEGEND;
+    if (s.mode === "days") return DAYS_LEGEND;
+  }
+  return LEGEND[category.kind] ?? LEGEND.default;
+}
 
 export function yearGrid(category, entries, year) {
   const jan1 = new Date(year, 0, 1);
@@ -21,6 +32,7 @@ export function yearGrid(category, entries, year) {
   const now = today();
   const index = indexByDay(entries);
   const template = `repeat(${cols}, 1fr)`;
+  const schedule = category.kind === "check" ? scheduleOf(category.options) : null;
 
   const months = h("div", { class: "months", "aria-hidden": "true", style: { gridTemplateColumns: template } },
     MONTHS_LABEL.map((label, m) => {
@@ -40,13 +52,14 @@ export function yearGrid(category, entries, year) {
     const date = addDays(jan1, n);
     const iso = toISO(date);
     const level = dayLevel(category.kind, index.get(`${category.id}|${iso}`) ?? [], category.options);
-    if (countsAsDone(category.kind, level)) count += 1;
-    const cls = [date > now ? "fut" : "", level ? `l${level}` : "", iso === toISO(now) ? "now" : ""].filter(Boolean).join(" ");
+    if (level === 3) count += 1;
+    const rest = schedule && !isScheduled(schedule, isoDowOf(iso)) && !level;
+    const cls = [date > now ? "fut" : "", level ? `l${level}` : "", rest ? "rest" : "", iso === toISO(now) ? "now" : ""].filter(Boolean).join(" ");
     dots.push(h("i", { class: cls || null, title: iso }));
   }
 
-  const legend = (LEGEND[category.kind] ?? LEGEND.default).map(([cls, text]) => h("span", null, h("i", { class: cls || null }), text));
-  const noun = NOUN[category.kind] ?? "giorni";
+  const legend = legendFor(category).map(([cls, text]) => h("span", null, h("i", { class: cls || null }), text));
+  const noun = NOUN[category.kind] ?? "giorni completati";
 
   return h(
     "div",

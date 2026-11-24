@@ -2,12 +2,14 @@
 import { h } from "../ui/dom.js";
 import { icon } from "../ui/icons.js";
 import { columnChart } from "../ui/charts.js";
+import { goalOf } from "../lib/selectors.js";
 import { iconFor } from "../lib/kinds.js";
 import { goalUnit } from "../lib/goals.js";
 import { totalsByLabel, scoreDistribution, runStats } from "../lib/stats.js";
 import { workoutVolume } from "../lib/workout.js";
 import { formatKg, SCORE_LABEL } from "../lib/summary.js";
-import { formatDuration, fromISO, today, MONTHS_SHORT } from "../lib/dates.js";
+import { formatDuration, fromISO, toISO, addDays, today, MONTHS_SHORT } from "../lib/dates.js";
+import { scheduleOf, isScheduled, isoDowOf } from "../lib/habits.js";
 import { formatKm } from "../lib/run.js";
 
 const fmt1 = (n) => String(Math.round(n * 10) / 10).replace(".", ",");
@@ -85,16 +87,25 @@ function extras(category, entries, series) {
         h("a", { class: "link", href: "#sonno" }, "Apri la schermata Sonno"));
     }
     default: {
-      const days = new Set(entries.map((en) => en.day)).size;
-      // Solo i giorni gia' trascorsi (oggi compreso): i giorni futuri della settimana non contano.
-      const total = Math.max(1, Math.round((today() - fromISO(series[0].start)) / 86400000) + 1);
-      return h("div", { class: "tiles" }, tile("Giorni fatti", String(days)), tile("Frequenza", `${Math.round((days / total) * 100)}%`, "dei giorni del periodo"));
+      // Giorni completati (per "N volte al giorno" solo quelli in cui sei arrivato a N).
+      const days = series.reduce((s, w) => s + w.value, 0);
+      const schedule = scheduleOf(category.options);
+      // Solo i giorni gia' trascorsi (oggi compreso) e, per i giorni precisi, solo quelli previsti.
+      let total = 0;
+      for (let d = fromISO(series[0].start); d <= today(); d = addDays(d, 1)) {
+        if (isScheduled(schedule, isoDowOf(toISO(d)))) total += 1;
+      }
+      const tiles = [
+        tile("Giorni completati", String(days)),
+        tile("Frequenza", `${Math.round((days / Math.max(1, total)) * 100)}%`, schedule.mode === "days" ? "dei giorni previsti" : "dei giorni del periodo"),
+      ];
+      return h("div", { class: "tiles" }, tiles);
     }
   }
 }
 
 export function categoryCard(category, entries, series) {
-  const goal = Number(category.weekly_goal);
+  const goal = goalOf(category);
   const runKm = category.kind === "run" ? sumByWeek(series, entries, (list) => list.reduce((s, en) => s + Number(en.amount), 0)) : null;
   const chart = runKm
     ? weeklyChart(runKm, { format: (v) => `${fmt1(v)}`, label: "Km di corsa per settimana" })

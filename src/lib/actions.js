@@ -101,6 +101,29 @@ export function toggleCheck(categoryId, day) {
   }));
 }
 
+/** Abitudini "N volte al giorno": un'unica registrazione per giorno con il conteggio. */
+export function stepCount(categoryId, day, delta, max = 20) {
+  return serialize(`${categoryId}|${day}`, () => guarded(async () => {
+    const existing = entriesOf(categoryId, day);
+    const ids = new Set(existing.map((en) => en.id));
+    const current = existing.reduce((s, en) => s + Number(en.amount || 0), 0);
+    const next = Math.max(0, Math.min(max, current + delta));
+    if (next === current) return null;
+    const [first, ...extra] = existing;
+    await Promise.all(extra.map((en) => api.deleteEntry(en.id)));
+    if (next === 0) {
+      if (first) await api.deleteEntry(first.id);
+      setState((s) => ({ entries: withoutIds(s.entries, ids) }));
+      return null;
+    }
+    const saved = first
+      ? await api.updateEntry(first.id, { amount: next })
+      : await api.insertEntry({ category_id: categoryId, day, amount: next });
+    setState((s) => ({ entries: [...withoutIds(s.entries, ids), saved] }));
+    return saved;
+  }));
+}
+
 /** Sonno: una sola notte per giorno. Se c'e' gia' la aggiorna, altrimenti la crea. */
 export function saveNight(categoryId, day, amount, details) {
   return serialize(`${categoryId}|${day}`, () => guarded(async () => {

@@ -117,9 +117,38 @@ describe("schermate", () => {
     expect(root.querySelector('.rem [aria-checked="true"]')).not.toBeNull();
   });
 
-  it("Categorie e obiettivi", () => {
+  it("Categorie e obiettivi: elenco con riassunti e editor", () => {
     const root = mount();
     renderSetup(root);
-    expect(root.textContent).toContain("Ore di sonno a notte");
+    expect(root.textContent).toContain("8 h a notte · 5 notti a settimana");
+    const sleepRow = [...root.querySelectorAll(".cat-open")].find((b) => b.textContent.includes("Sonno"));
+    sleepRow.click();
+    expect(document.querySelector(".sheet").textContent).toContain("Ore di sonno a notte");
+    document.querySelector(".sheet .x").click();
+  });
+
+  it("Nuova abitudine: scelta della frequenza", () => {
+    const root = mount();
+    renderSetup(root);
+    [...root.querySelectorAll("button")].find((b) => b.textContent.includes("Nuova abitudine")).click();
+    const sheet = document.querySelector(".sheet");
+    const perDay = [...sheet.querySelectorAll(".freq")].find((b) => b.textContent.includes("Più volte al giorno"));
+    perDay.click();
+    expect(sheet.textContent).toContain("Volte al giorno");
+    expect(sheet.querySelector(".hint").textContent).toContain("2 volte al giorno");
+    [...sheet.querySelectorAll(".freq")].find((b) => b.textContent.includes("Giorni precisi")).click();
+    expect(sheet.querySelectorAll(".days-pick button[aria-pressed='true']").length).toBe(3);
+    sheet.querySelector(".x").click();
+  });
+
+  it("Home: contatore per le abitudini N volte al giorno", () => {
+    const teeth = { ...cat("t", "check", "Lavare i denti", 7, { schedule: { mode: "perDay", perDay: 2 } }), icon: "tooth" };
+    setState({ categories: [...categories, teeth], entries: [...getState().entries, { id: "t1", category_id: "t", day: day(0), amount: 1, created_at: "", details: {} }] });
+    const root = mount();
+    renderHome(root, getState());
+    const counter = root.querySelector(".counter");
+    expect(counter.textContent).toContain("1/2");
+    expect(root.textContent).toContain("ne manca 1");
+    setState({ categories });
   });
 });

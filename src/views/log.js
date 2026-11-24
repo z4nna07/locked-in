@@ -6,7 +6,8 @@ import { toast } from "../ui/toast.js";
 import { getState } from "../lib/store.js";
 import { iconFor } from "../lib/kinds.js";
 import { entrySummary, dayLabel, SCORE_LABEL } from "../lib/summary.js";
-import { addEntry, removeEntry, setScore, toggleCheck, rememberOption, saveNight } from "../lib/actions.js";
+import { addEntry, removeEntry, setScore, toggleCheck, rememberOption, saveNight, stepCount } from "../lib/actions.js";
+import { scheduleOf, describeSchedule } from "../lib/habits.js";
 import { formFor } from "./log-forms.js";
 import { loadSession } from "../lib/session.js";
 import { startWorkout } from "./session.js";
@@ -77,6 +78,24 @@ export function openLogSheet(category, day) {
   }
   if (category.kind === "gym") {
     openGymSheet(category, day, reopen);
+    return;
+  }
+  if (category.kind === "check" && scheduleOf(category.options).mode === "perDay") {
+    const schedule = scheduleOf(category.options);
+    const count = entriesOf(category.id, day).reduce((s, en) => s + Number(en.amount || 0), 0);
+    const step = (delta) => async () => {
+      await stepCount(category.id, day, delta);
+      openLogSheet(category, day);
+    };
+    openSheet({
+      title: category.name,
+      subtitle: `${subtitle} · ${describeSchedule(schedule)}`,
+      content: h("div", { class: "big-counter" },
+        h("button", { class: "btn ghost", type: "button", "aria-label": "Togli una volta", disabled: count === 0, onClick: step(-1) }, icon("minus")),
+        h("div", { class: `big num${count >= schedule.perDay ? " full" : ""}` }, `${count}/${schedule.perDay}`),
+        h("button", { class: "btn", type: "button", "aria-label": "Aggiungi una volta", onClick: step(1) }, icon("plus")),
+      ),
+    });
     return;
   }
   if (category.kind === "check") {

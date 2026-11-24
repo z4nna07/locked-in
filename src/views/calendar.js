@@ -4,7 +4,7 @@ import { icon } from "../ui/icons.js";
 import { setState } from "../lib/store.js";
 import { today } from "../lib/dates.js";
 import { iconFor } from "../lib/kinds.js";
-import { byCategory, categoryStreak } from "../lib/selectors.js";
+import { byCategory, categoryStreak, goalOf, streakLabel } from "../lib/selectors.js";
 import { bestStreak, firstYear } from "../lib/stats.js";
 import { dayLevel } from "../lib/goals.js";
 import { yearGrid } from "./year-grid.js";
@@ -15,7 +15,7 @@ function doneDays(category, entries) {
   let count = 0;
   byDay.forEach((list) => {
     const level = dayLevel(category.kind, list, category.options);
-    if (category.kind === "food" || category.kind === "sleep" ? level === 3 : level > 0) count += 1;
+    if (level === 3) count += 1;
   });
   return count;
 }
@@ -35,7 +35,7 @@ function tabs(categories, selected) {
 
 function summary(category, entries) {
   const current = categoryStreak(category, entries, today());
-  const best = bestStreak(category.kind, Number(category.weekly_goal), entries, category.options);
+  const best = bestStreak(category.kind, goalOf(category), entries, category.options);
   const noun = { food: "giorni puliti", sleep: "notti a obiettivo", gym: "allenamenti" }[category.kind] ?? "giorni fatti";
   const tile = (label, value, flame) =>
     h("div", { class: "tile" }, h("div", { class: "lbl" }, label), h("div", { class: `val num${flame ? " flame" : ""}` }, flame ? icon("flame", "") : null, value));
@@ -43,8 +43,8 @@ function summary(category, entries) {
     "section",
     { class: "card" },
     h("div", { class: "tiles three" },
-      tile("Streak attuale", `${current} sett.`, true),
-      tile("Migliore", `${best} sett.`),
+      tile("Streak attuale", streakLabel(category, current), true),
+      tile("Migliore", streakLabel(category, best)),
       tile("Totale", `${doneDays(category, entries)} ${noun}`),
     ),
   );

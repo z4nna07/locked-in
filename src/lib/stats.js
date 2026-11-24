@@ -1,6 +1,7 @@
 // Statistiche: serie settimanali, costanza, ripartizioni per materia/progetto, voti, corsa, streak migliore.
 import { toISO, fromISO, addDays, startOfWeek } from "./dates.js";
 import { weekValue } from "./goals.js";
+import { scheduleOf, isDayBased, bestDayStreak } from "./habits.js";
 
 function groupByWeek(entries) {
   const map = new Map();
@@ -66,8 +67,9 @@ export function runStats(entries) {
   return { km, runs: entries.length, longest, bestPace: paces.length ? Math.min(...paces) : null };
 }
 
-/** Serie piu' lunga di settimane consecutive con obiettivo raggiunto. */
+/** Serie piu' lunga: giorni per le abitudini quotidiane, settimane con obiettivo raggiunto per il resto. */
 export function bestStreak(kind, goal, entries, opts = {}) {
+  if (kind === "check" && isDayBased(scheduleOf(opts))) return bestDayStreak(scheduleOf(opts), entries);
   if (!goal || goal <= 0 || entries.length === 0) return 0;
   const byWeek = groupByWeek(entries);
   const keys = [...byWeek.keys()].sort();

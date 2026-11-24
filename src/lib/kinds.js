@@ -24,6 +24,16 @@ export const SLEEP_TARGET = { min: 5, max: 11, step: 0.5 };
 
 export const CUSTOM = { kind: "check", weekly_goal: 3, step: 1, max: 7 };
 
+/** Icone tra cui scegliere (nome nello sprite, descrizione per lettori di schermo). */
+export const ICON_CHOICES = [
+  ["checkbox", "Spunta"], ["tooth", "Denti"], ["drop", "Acqua"], ["pill", "Integratori"], ["sparkle", "Skincare"],
+  ["leaf", "Verdure"], ["apple", "Frutta"], ["coffee", "Caffè"], ["heart", "Salute"], ["lotus", "Meditazione"],
+  ["moon", "Sonno"], ["sun", "Mattina"], ["bed", "Riposo"], ["book", "Lettura"], ["pen", "Scrittura"],
+  ["globe", "Lingue"], ["code", "Programmazione"], ["music", "Musica"], ["run", "Corsa"], ["steps", "Passi"],
+  ["bike", "Bici"], ["dumbbell", "Palestra"], ["rocket", "Progetti"], ["target", "Obiettivo"], ["smile", "Umore"],
+  ["star", "Preferita"], ["phone-off", "Niente telefono"], ["flame", "Fuoco"],
+];
+
 export function goalLimits(kind) {
   return PRESETS.find((p) => p.kind === kind) ?? CUSTOM;
 }

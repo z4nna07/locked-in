@@ -78,9 +78,35 @@ describe("buildMessages", () => {
   });
 });
 
+describe("abitudini personalizzate sul server", () => {
+  const teeth = { ...cat("t", "check", "Lavare i denti", 7), options: { schedule: { mode: "perDay", perDay: 2 } } };
+  const mwf = { ...cat("m", "check", "Stretching", 3), options: { schedule: { mode: "days", days: [1, 3, 5] } } };
+
+  it("contatore a meta': promemoria con quante volte mancano", () => {
+    const out = buildMessages([rem({ category_id: "t" })], [teeth], [en("t", "2026-11-26", 1)], local);
+    expect(out.sends[0].body).toBe("Ancora 1 volta oggi (1 di 2).");
+  });
+  it("contatore completato: niente promemoria", () => {
+    expect(buildMessages([rem({ category_id: "t" })], [teeth], [en("t", "2026-11-26", 2)], local).sends).toHaveLength(0);
+  });
+  it("giorno di riposo (giovedi per lun/mer/ven): niente promemoria ne' 'segna la giornata'", () => {
+    expect(buildMessages([rem({ category_id: "m" })], [mwf], [], local).sends).toHaveLength(0);
+    expect(buildMessages([rem({ id: "d", kind: "daily_log", category_id: null })], [mwf], [], local).sends).toHaveLength(0);
+  });
+  it("streak a rischio per le quotidiane: oggi non completata", () => {
+    const out = buildMessages([rem({ id: "x", kind: "streak_risk", category_id: null })], [teeth], [en("t", "2026-11-26", 1)], local);
+    expect(out.sends[0].body).toBe("Lavare i denti: ancora 1 di 2 oggi");
+  });
+});
+
 describe("stessa regola dell'app", () => {
   const list = [en("x", "2026-11-23", 480), en("x", "2026-11-24", 3), en("x", "2026-11-24", 1), en("x", "2026-11-25", 90)];
   it.each(["gym", "run", "check", "food", "study", "project", "sleep"])("%s", (kind) => {
     expect(serverWeekValue(kind, list, { target_hours: 8 })).toBe(weekValue(kind, list, { target_hours: 8 }));
+  });
+  it.each([
+    { mode: "daily" }, { mode: "perDay", perDay: 2 }, { mode: "perDay", perDay: 4 }, { mode: "days", days: [1, 3] }, { mode: "weekly" },
+  ])("abitudine %o", (schedule) => {
+    expect(serverWeekValue("check", list, { schedule })).toBe(weekValue("check", list, { schedule }));
   });
 });
