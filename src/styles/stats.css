@@ -1,0 +1,21 @@
+/* Calendario e statistiche */
+.tiles.three { grid-template-columns: repeat(3, 1fr); }
+.tiles.three .val { font-size: 16px; }
+.val.flame { display: flex; align-items: center; gap: 4px; color: var(--amber); }
+.val.flame svg { width: 16px; height: 16px; fill: var(--amber); stroke: none; filter: drop-shadow(0 0 4px var(--amber-glow)); }
+@media (max-width: 380px) { .tiles.three { grid-template-columns: 1fr 1fr; } }
+
+.ch-bar.hit { fill: var(--neon); }
+.ch-bar.cur { fill: var(--violet); opacity: 0.55; }
+
+.with-ic { display: flex; align-items: center; gap: 8px; }
+.with-ic svg.i { width: 18px; height: 18px; color: var(--violet); }
+
+.hbars { display: flex; flex-direction: column; gap: 12px; margin-top: 14px; }
+.hbar { display: flex; flex-direction: column; gap: 6px; }
+.hbar-top { display: flex; justify-content: space-between; gap: 12px; font-size: 13.5px; }
+.hbar-top span:last-child { color: var(--muted); white-space: nowrap; }
+.hbar .bar { grid-column: auto; }
+.hbar.food:nth-child(1) .bar i { background: linear-gradient(90deg, #1fcf7c, var(--neon)); box-shadow: 0 0 12px var(--neon-glow); }
+.hbar.food:nth-child(3) .bar i { background: var(--amber); box-shadow: 0 0 12px var(--amber-glow); }
+.card > .chart-wrap + .tiles, .card > .chart-wrap + .hbars { margin-top: 14px; }

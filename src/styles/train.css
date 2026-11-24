@@ -1,0 +1,54 @@
+/* Palestra: schede, allenamento in corso, record, peso */
+.btn.sm { min-height: 38px; padding: 0 16px; font-size: 14px; box-shadow: none; }
+.input.sm { min-height: 44px; padding: 0 10px; text-align: center; }
+.go.muted { color: var(--muted); }
+.rec { font-size: 14px; font-weight: 600; color: var(--neon); white-space: nowrap; }
+.unit { font-size: 16px; font-weight: 400; color: var(--muted); }
+
+.tpl-list { display: flex; flex-direction: column; gap: 8px; }
+.tpl {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 12px 12px 12px 14px; border-radius: 18px; background: rgba(255, 255, 255, 0.03);
+}
+.tpl-main { text-align: left; min-width: 0; flex: 1; }
+.tpl-main .t { font-size: 15px; }
+.tpl-main .s { font-size: 12.5px; color: var(--muted); }
+
+.ongoing {
+  display: grid; grid-template-columns: 14px 1fr auto; align-items: center; gap: 12px; padding: 14px 16px;
+  border-color: rgba(61, 255, 160, 0.35);
+}
+.ongoing .t { font-size: 15px; }
+.ongoing .s { font-size: 12.5px; color: var(--muted); }
+.dot-live { width: 10px; height: 10px; border-radius: 50%; background: var(--neon); box-shadow: 0 0 10px var(--neon-glow); animation: pulse 1.6s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: 0.35; } }
+
+/* Editor schede */
+.ex-list { display: flex; flex-direction: column; gap: 10px; }
+.ex-edit { display: flex; flex-direction: column; gap: 10px; padding: 12px; border-radius: 18px; background: rgba(255, 255, 255, 0.035); }
+.ex-edit-top { display: grid; grid-template-columns: 26px 1fr; align-items: center; gap: 10px; }
+.ex-n { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; background: var(--violet-soft); color: var(--violet); }
+.ex-edit-bottom { display: flex; align-items: flex-end; gap: 10px; flex-wrap: wrap; }
+.mini { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); width: 92px; }
+.ex-tools { display: flex; gap: 2px; margin-left: auto; }
+.ex-tools .icon-btn[disabled] { opacity: 0.3; }
+svg.i.up { transform: rotate(-90deg); }
+svg.i.down { transform: rotate(90deg); }
+.btn.danger.armed { background: var(--danger); color: #fff; }
+
+/* Allenamento in corso */
+.timer-box { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 99px; background: var(--surface); border: 1px solid var(--line); }
+.timer-box svg.i { width: 18px; height: 18px; color: var(--neon); }
+.timer { font-size: 18px; font-weight: 500; }
+.session-list { display: flex; flex-direction: column; gap: 14px; }
+.ex-card .card-h { margin-bottom: 6px; }
+.ex-hints { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12.5px; color: var(--muted); margin-bottom: 12px; }
+.ex-hints b { color: var(--fg); font-weight: 500; }
+.sets { display: flex; flex-direction: column; gap: 8px; }
+.set-row { display: grid; grid-template-columns: 26px 1fr 14px 1fr 44px; align-items: center; gap: 8px; }
+.set-n { font-size: 13px; color: var(--muted); text-align: center; }
+.x-sign { color: var(--dim); text-align: center; }
+.set-row .tick { width: 44px; height: 44px; }
+.set-tools { display: flex; gap: 6px; margin-top: 8px; }
+.session-actions { display: flex; flex-direction: column; gap: 10px; }
+@media (min-width: 640px) { .session-actions { flex-direction: row; } }

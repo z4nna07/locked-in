@@ -1,0 +1,10 @@
+.secrets/
+.env
+.env.*
+node_modules/
+dist/
+supabase/.temp/
+anteprima-home.html
+.vscode/
+*.log
+coverage/

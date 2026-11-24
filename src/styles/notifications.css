@@ -1,0 +1,22 @@
+/* Notifiche: stato del dispositivo e righe dei promemoria */
+.steps { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; color: var(--muted); }
+.status-on { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--neon); font-weight: 500; }
+.status-on svg.i { width: 18px; height: 18px; }
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.rems { display: flex; flex-direction: column; gap: 8px; }
+.rem { display: flex; flex-direction: column; gap: 12px; padding: 12px; border-radius: 18px; background: rgba(255, 255, 255, 0.03); }
+.rem-top { display: grid; grid-template-columns: 42px 1fr auto; align-items: center; gap: 12px; }
+.rem-top .ic { width: 42px; height: 42px; border-radius: 14px; display: grid; place-items: center; background: var(--violet-soft); color: var(--violet); }
+.rem-top .txt { min-width: 0; }
+.rem-top .t { font-size: 15px; }
+.rem-top .s { font-size: 12.5px; color: var(--muted); }
+.rem-details { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding-left: 54px; }
+.input.time { width: 112px; }
+.days-pick { display: flex; gap: 4px; }
+.days-pick button {
+  width: 32px; height: 32px; border-radius: 50%; font-size: 12.5px; font-weight: 600;
+  color: var(--muted); background: var(--surface); border: 1px solid var(--line);
+}
+.days-pick button[aria-pressed="true"] { background: var(--violet); border-color: var(--violet); color: #fff; }
+@media (max-width: 400px) { .rem-details { padding-left: 0; } }
